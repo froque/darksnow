@@ -39,9 +39,6 @@ void dark_put_in_box (GtkWidget *widget, gint response_id, gpointer data);
 /* Callback for OK button of the "Save File" file selector, displayed by dark_save */
 void dark_write_config ( GtkWidget *widget, gint response_id, gpointer data );
 
-/* Callback for About Menu Option */
-void dark_about (GtkWidget *widget, gpointer data);
-
 /* Callback for the local dump file selector 'ok' button */
 void dark_localdump (GtkWidget *widget, gint response_id,  gpointer data);
 

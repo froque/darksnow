@@ -168,29 +168,26 @@ int main( int  argc, char *argv[], char *envp[]) {
   gtk_menu_shell_append (GTK_MENU_SHELL (menu_file), menu_item_quit_nd);
   gtk_menu_shell_append (GTK_MENU_SHELL (menu_file), menu_item_quit);
   gtk_menu_item_set_submenu (GTK_MENU_ITEM (menu_item_file), menu_file);
-  gtk_menu_bar_append ( GTK_MENU_BAR (menu_bar), menu_item_file );
-  
+  gtk_menu_shell_append ( GTK_MENU_SHELL (menu_bar), menu_item_file );
+
   menu_help = gtk_menu_new();
   menu_item_help = gtk_menu_item_new_with_label ( gettext("Help") );
   menu_item_about = gtk_menu_item_new_with_label ( gettext("About") );
   gtk_menu_shell_append (GTK_MENU_SHELL (menu_help), menu_item_about);
   gtk_menu_item_set_submenu (GTK_MENU_ITEM (menu_item_help), menu_help);
-  gtk_menu_bar_append ( GTK_MENU_BAR (menu_bar), menu_item_help );
+  gtk_menu_shell_append ( GTK_MENU_SHELL (menu_bar), menu_item_help );
 
   gtk_box_pack_start (GTK_BOX (vbox), menu_bar, FALSE, FALSE, 0);
 
   
   /* sets up the about dialog */
- 
-  sprintf(bar, gettext("DarkSnow version: %s\nSoftware written by Rafael Diniz\nLicense: GNU Public License v3"),VERSION);
-  dialog_about = gtk_dialog_new ();
-  label_about = gtk_label_new ( bar );
-  button_about = gtk_button_new_with_label ( gettext("Close"));
-  gtk_window_set_title(GTK_WINDOW (dialog_about), gettext("About DarkSnow"));
-  gtk_widget_set_size_request (GTK_WIDGET (dialog_about), 350, 200); 
-  gtk_box_pack_start (GTK_BOX (gtk_dialog_get_action_area( GTK_DIALOG (dialog_about))), button_about, TRUE, TRUE, 0);
-  gtk_box_pack_start (GTK_BOX (GTK_DIALOG (dialog_about)->vbox), label_about, TRUE, TRUE, 0);
-
+  dialog_about = gtk_about_dialog_new ();
+  const gchar *authors[] = {"Rafael Diniz", NULL};
+  gtk_about_dialog_set_program_name( GTK_ABOUT_DIALOG( dialog_about), "DarkSnow");
+  gtk_about_dialog_set_version( GTK_ABOUT_DIALOG( dialog_about), VERSION);
+  gtk_about_dialog_set_authors( GTK_ABOUT_DIALOG(dialog_about), authors);
+/*  gtk_about_dialog_set_license_type( GTK_ABOUT_DIALOG(dialog_about), GTK_LICENSE_GPL_3_0);*/
+  gtk_about_dialog_set_website( GTK_ABOUT_DIALOG(dialog_about), "http://darksnow.radiolivre.org");
 
   /* sets up the exit window */
   dialog_darkkill = gtk_dialog_new ();
@@ -454,29 +451,23 @@ int main( int  argc, char *argv[], char *envp[]) {
 
   g_signal_connect (G_OBJECT (window), "delete_event",G_CALLBACK (main_quit), NULL);
   
-  g_signal_connect_swapped (G_OBJECT (dialog_about), "delete_event",G_CALLBACK (gtk_widget_hide), dialog_about);
-  g_signal_connect_swapped (G_OBJECT (button_about), "clicked",G_CALLBACK (gtk_widget_hide), dialog_about);
+  g_signal_connect_swapped (G_OBJECT (dialog_about), "response",G_CALLBACK (gtk_widget_hide), dialog_about);
 
   g_signal_connect (G_OBJECT (button_start), "clicked", G_CALLBACK (dark_start), NULL);
   g_signal_connect (G_OBJECT (button_stop), "clicked", G_CALLBACK (dark_stop), NULL);
   g_signal_connect (G_OBJECT (button_detail), "clicked", G_CALLBACK (dark_detail), NULL);
   
-  g_signal_connect_swapped (G_OBJECT (menu_item_open), "activate", G_CALLBACK (gtk_widget_show), file_open);
-  g_signal_connect_swapped (G_OBJECT (menu_item_save), "activate", G_CALLBACK (gtk_widget_show), file_save);
+  g_signal_connect_swapped (G_OBJECT (menu_item_open), "activate", G_CALLBACK (gtk_dialog_run), file_open);
+  g_signal_connect_swapped (G_OBJECT (menu_item_save), "activate", G_CALLBACK (gtk_dialog_run), file_save);
   g_signal_connect (G_OBJECT (menu_item_quit), "activate", G_CALLBACK (main_quit), NULL);
   g_signal_connect (G_OBJECT (menu_item_quit_nd), "activate", G_CALLBACK (delete_event_nd), NULL);
-  g_signal_connect (G_OBJECT (menu_item_about), "activate", G_CALLBACK (dark_about), NULL);
-  
-  g_signal_connect_swapped (G_OBJECT (button_localdump), "clicked", G_CALLBACK (gtk_widget_show), file_localdump);
+  g_signal_connect_swapped (G_OBJECT (menu_item_about), "activate", G_CALLBACK (gtk_dialog_run), dialog_about);
+  g_signal_connect_swapped (G_OBJECT (button_localdump), "clicked", G_CALLBACK (gtk_dialog_run), file_localdump);
 
   g_signal_connect ( G_OBJECT (GTK_FILE_CHOOSER_DIALOG (file_open)), "response", G_CALLBACK (dark_put_in_box), NULL);
-  g_signal_connect_swapped ( G_OBJECT (file_open), "delete_event", G_CALLBACK (gtk_widget_hide), file_open);
-
   g_signal_connect ( G_OBJECT (GTK_FILE_CHOOSER_DIALOG (file_save)), "response", G_CALLBACK (dark_write_config), NULL);
-  g_signal_connect_swapped ( G_OBJECT (file_save), "delete_event", G_CALLBACK (gtk_widget_hide), file_save);
-
   g_signal_connect ( G_OBJECT (GTK_FILE_CHOOSER_DIALOG (file_localdump)), "response", G_CALLBACK (dark_localdump), NULL);
-  g_signal_connect_swapped ( G_OBJECT (file_localdump), "delete_event", G_CALLBACK (gtk_widget_hide), file_localdump);
+
   
   /* pack the notebook, the buttons and textview widgets into the main table */
   gtk_table_attach (GTK_TABLE (table), notebook, 0, SIZE_X, 0, 400, (GTK_FILL | GTK_SHRINK | GTK_EXPAND), (GTK_FILL | GTK_SHRINK), 5, 5);
@@ -572,8 +563,6 @@ int main( int  argc, char *argv[], char *envp[]) {
   gtk_widget_show (button_detail);
   gtk_widget_show (label_status);
 
-  gtk_widget_show (label_about);
-  gtk_widget_show (button_about);
   
   gtk_widget_show (label_icecast);
   gtk_widget_show (combo_icecast);

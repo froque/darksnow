@@ -49,8 +49,6 @@ GtkWidget *table;
 
 /* About Dialog box */
 GtkWidget *dialog_about;
-GtkWidget *label_about;
-GtkWidget *button_about;
 
 /* darkice not found dialog box */
 GtkWidget *dialog_darkdep;
