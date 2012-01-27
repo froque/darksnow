@@ -69,7 +69,7 @@ void dark_start( GtkWidget *widget, gpointer data) {
   /* call the function that translate the darksnow config file to the darkice config file */
   darksnow2darkice_cfg();
 
-  darkice_verbosity =  (char *) gtk_entry_get_text  ( GTK_ENTRY(GTK_COMBO(combo_verbosity)->entry));
+  darkice_verbosity = gtk_combo_box_text_get_active_text  ( GTK_COMBO_BOX_TEXT(combo_verbosity));
 
   strcpy(command,"darkice");
   strcat(command," -v ");
@@ -115,7 +115,7 @@ void dark_stop( GtkWidget *widget, gpointer data ){
 
 }
 
-void dark_put_in_box ( GtkWidget *widget, gpointer data ) {
+void dark_put_in_box ( GtkWidget *widget, gint response_id, gpointer data ) {
   FILE *f_darksnow_cfg;
   char *darksnow_path;
   char foo[256] = {0};
@@ -144,7 +144,12 @@ void dark_put_in_box ( GtkWidget *widget, gpointer data ) {
   char verbosity[8] = {0};
   DIR *directory;
 
-  darksnow_path = (char *) gtk_file_selection_get_filename (GTK_FILE_SELECTION (file_open));
+  if (response_id != GTK_RESPONSE_ACCEPT) {
+    gtk_widget_hide(file_open);
+    return ;
+  }
+
+  darksnow_path = gtk_file_chooser_get_filename (GTK_FILE_CHOOSER (file_open));
   
   if ( (directory = opendir(darksnow_path))) {
     printf("Error: %s is a directory\n", darksnow_path);
@@ -156,7 +161,7 @@ void dark_put_in_box ( GtkWidget *widget, gpointer data ) {
     printf("Error: Cannot open %s\n", darksnow_path);
     return;
   }
-  
+
   fscanf(f_darksnow_cfg, "%[^=]=%[^\n]\n", foo, server);
   fscanf(f_darksnow_cfg, "%[^=]=%[^\n]\n", foo, port);
   fscanf(f_darksnow_cfg, "%[^=]=%[^\n]\n", foo, mountpoint);
@@ -192,18 +197,19 @@ void dark_put_in_box ( GtkWidget *widget, gpointer data ) {
   gtk_entry_set_text ( (GtkEntry *) entry_server, server);
   gtk_entry_set_text ( (GtkEntry *) entry_remotedump, remotedump);
   gtk_entry_set_text ( (GtkEntry *) entry_localdump, localdump);
-  gtk_entry_set_text ( GTK_ENTRY(GTK_COMBO(combo_icecast)->entry), icecast);
-  gtk_entry_set_text ( GTK_ENTRY(GTK_COMBO(combo_format)->entry), format);
-  gtk_entry_set_text ( GTK_ENTRY(GTK_COMBO(combo_bitrate)->entry), bitrate);
-  gtk_entry_set_text ( GTK_ENTRY(GTK_COMBO(combo_bitratemode)->entry), bitratemode);
-  gtk_entry_set_text ( GTK_ENTRY(GTK_COMBO(combo_samplerate)->entry), samplerate);
-  gtk_entry_set_text ( GTK_ENTRY(GTK_COMBO(combo_quality)->entry), quality);
-  gtk_entry_set_text ( GTK_ENTRY(GTK_COMBO(combo_bitspersample)->entry), bitspersample);
-  gtk_entry_set_text ( GTK_ENTRY(GTK_COMBO(combo_channel)->entry), channel);
-  gtk_entry_set_text ( GTK_ENTRY(GTK_COMBO(combo_buffersize)->entry), buffersize);
-  gtk_entry_set_text ( GTK_ENTRY(GTK_COMBO(combo_device)->entry), device);
-  gtk_entry_set_text ( GTK_ENTRY(GTK_COMBO(combo_public)->entry), public);
-  gtk_entry_set_text ( GTK_ENTRY(GTK_COMBO(combo_verbosity)->entry), verbosity);
+  gtk_entry_set_text ( GTK_ENTRY(gtk_bin_get_child (GTK_BIN (combo_icecast))), icecast);
+  gtk_entry_set_text ( GTK_ENTRY(gtk_bin_get_child (GTK_BIN (combo_format))), format);
+  gtk_entry_set_text ( GTK_ENTRY(gtk_bin_get_child (GTK_BIN (combo_bitrate))), bitrate);
+  gtk_entry_set_text ( GTK_ENTRY(gtk_bin_get_child (GTK_BIN (combo_bitratemode))), bitratemode);
+  gtk_entry_set_text ( GTK_ENTRY(gtk_bin_get_child (GTK_BIN (combo_samplerate))), samplerate);
+  gtk_entry_set_text ( GTK_ENTRY(gtk_bin_get_child (GTK_BIN (combo_quality))), quality);
+  gtk_entry_set_text ( GTK_ENTRY(gtk_bin_get_child (GTK_BIN (combo_bitspersample))), bitspersample);
+  gtk_entry_set_text ( GTK_ENTRY(gtk_bin_get_child (GTK_BIN (combo_channel))), channel);
+  gtk_entry_set_text ( GTK_ENTRY(gtk_bin_get_child (GTK_BIN (combo_buffersize))), buffersize);
+  gtk_entry_set_text ( GTK_ENTRY(gtk_bin_get_child (GTK_BIN (combo_device))), device);
+  gtk_entry_set_text ( GTK_ENTRY(gtk_bin_get_child (GTK_BIN (combo_public))), public);
+  gtk_entry_set_text ( GTK_ENTRY(gtk_bin_get_child (GTK_BIN (combo_verbosity))),verbosity);
+
 
   if (adddate == '1')
     gtk_toggle_button_set_active( GTK_TOGGLE_BUTTON (checkbutton_adddate), TRUE);
@@ -216,10 +222,15 @@ void dark_put_in_box ( GtkWidget *widget, gpointer data ) {
   
 }
 
-void dark_write_config ( GtkWidget *widget, gpointer data ) {
+void dark_write_config ( GtkWidget *widget, gint response_id, gpointer data ) {
   char *darksnow_path;
 
-  darksnow_path = (char *) gtk_file_selection_get_filename (GTK_FILE_SELECTION (file_save));
+  if (response_id != GTK_RESPONSE_ACCEPT) {
+    gtk_widget_hide(file_save);
+    return ;
+  }
+
+  darksnow_path = gtk_file_chooser_get_filename (GTK_FILE_CHOOSER (file_save));
   if (darksnow_config_store (0, darksnow_path))
     gtk_widget_hide(file_save);
   
@@ -231,8 +242,13 @@ void dark_about ( GtkWidget *widget, gpointer data ) {
 }
 
 
-void dark_localdump (GtkWidget *widget, gpointer data){
-  gtk_entry_set_text ( (GtkEntry *) entry_localdump, (char *) gtk_file_selection_get_filename (GTK_FILE_SELECTION (file_localdump)) );
+void dark_localdump (GtkWidget *widget, gint response_id,  gpointer data){
+  if (response_id != GTK_RESPONSE_ACCEPT) {
+    gtk_widget_hide(file_localdump);
+    return ;
+  }
+
+  gtk_entry_set_text ( (GtkEntry *) entry_localdump, gtk_file_chooser_get_filename (GTK_FILE_CHOOSER (file_localdump)));
   gtk_widget_hide (file_localdump);
 
 }
@@ -355,9 +371,9 @@ void darkice_not_found() {
 
   /* sets up the darkice not found dialog */
   if (!FUN)
-    sprintf(bar, gettext("Darkice not found!\nDownload darkice at http://darkice.sf.net/"));
+    sprintf(bar, gettext("Darkice not found!\nDownload darkice at http://code.google.com/p/darkice/"));
   else
-    sprintf(bar, gettext("Don't you know you should have the fucking\ndarkice to run this shit!!\nGet it at http://darkice.sf.net/\n"));
+    sprintf(bar, gettext("Don't you know you should have the fucking\ndarkice to run this shit!!\nGet it at http://code.google.com/p/darkice/\n"));
   
   dialog_darkdep = gtk_dialog_new ();
   label_darkdep = gtk_label_new ( bar );
