@@ -196,10 +196,9 @@ int main( int  argc, char *argv[], char *envp[]) {
   button_no_darkkill = gtk_button_new_with_label (gettext("No"));
 
   gtk_window_set_title(GTK_WINDOW (dialog_darkkill), gettext("Darkice is running"));
-  gtk_widget_set_size_request (GTK_WIDGET (dialog_darkkill), 300, 200); 
   gtk_box_pack_start (GTK_BOX (gtk_dialog_get_action_area( GTK_DIALOG (dialog_darkkill))), button_yes_darkkill, TRUE, TRUE, 0);
   gtk_box_pack_start (GTK_BOX (gtk_dialog_get_action_area( GTK_DIALOG (dialog_darkkill))), button_no_darkkill, TRUE, TRUE, 0);
-  gtk_box_pack_start (GTK_BOX (GTK_DIALOG (dialog_darkkill)->vbox), label_darkkill, TRUE, TRUE, 0);
+  gtk_box_pack_start (GTK_BOX (gtk_dialog_get_content_area( GTK_DIALOG (dialog_darkkill))), label_darkkill, TRUE, TRUE, 0);
   
   g_signal_connect_swapped (G_OBJECT (dialog_darkkill), "delete_event",G_CALLBACK (gtk_widget_hide), dialog_darkkill);
   g_signal_connect (G_OBJECT (button_yes_darkkill), "clicked",G_CALLBACK (delete_event), NULL);
@@ -277,7 +276,7 @@ int main( int  argc, char *argv[], char *envp[]) {
   gtk_combo_box_text_append_text ( GTK_COMBO_BOX_TEXT (combo_verbosity), "8");
   gtk_combo_box_text_append_text ( GTK_COMBO_BOX_TEXT (combo_verbosity), "9");
   gtk_combo_box_text_append_text ( GTK_COMBO_BOX_TEXT (combo_verbosity), "10");
-
+  gtk_entry_set_text (GTK_ENTRY (gtk_bin_get_child (GTK_BIN (combo_verbosity))),"0");
 
   label_remotedump = gtk_label_new ( gettext ("Remote Dump File: ")); 
   entry_remotedump = gtk_entry_new ();
@@ -297,13 +296,14 @@ int main( int  argc, char *argv[], char *envp[]) {
   gtk_combo_box_text_append_text ( GTK_COMBO_BOX_TEXT (combo_format), gettext("aac"));
   gtk_combo_box_text_append_text ( GTK_COMBO_BOX_TEXT (combo_format), gettext("mp2"));
   gtk_combo_box_text_append_text ( GTK_COMBO_BOX_TEXT (combo_format), gettext("aacp"));
-
+  gtk_entry_set_text (GTK_ENTRY (gtk_bin_get_child (GTK_BIN (combo_format))),"ogg/vorbis");
 
   label_bitratemode = gtk_label_new ( gettext("BitRateMode: "));
   combo_bitratemode = gtk_combo_box_text_new_with_entry ();
   gtk_combo_box_text_append_text ( GTK_COMBO_BOX_TEXT (combo_bitratemode), gettext("Constant"));
   gtk_combo_box_text_append_text ( GTK_COMBO_BOX_TEXT (combo_bitratemode), gettext("Average"));
   gtk_combo_box_text_append_text ( GTK_COMBO_BOX_TEXT (combo_bitratemode), gettext("Variable"));
+  gtk_entry_set_text (GTK_ENTRY (gtk_bin_get_child (GTK_BIN (combo_bitratemode))),"Constant");
 
   label_bitrate = gtk_label_new ( gettext("BitRate: "));
   combo_bitrate = gtk_combo_box_text_new_with_entry ();
@@ -326,7 +326,7 @@ int main( int  argc, char *argv[], char *envp[]) {
   gtk_combo_box_text_append_text ( GTK_COMBO_BOX_TEXT (combo_bitrate), "192");
   gtk_combo_box_text_append_text ( GTK_COMBO_BOX_TEXT (combo_bitrate), "224");
   gtk_combo_box_text_append_text ( GTK_COMBO_BOX_TEXT (combo_bitrate), "256");
-  gtk_entry_set_text ( GTK_ENTRY(gtk_bin_get_child (GTK_BIN (combo_bitrate))),"32");
+  gtk_entry_set_text ( GTK_ENTRY(gtk_bin_get_child (GTK_BIN (combo_bitrate))),"128");
 
   label_samplerate = gtk_label_new ( gettext("SampleRate: "));
   combo_samplerate = gtk_combo_box_text_new_with_entry ();
@@ -356,6 +356,7 @@ int main( int  argc, char *argv[], char *envp[]) {
   combo_bitspersample = gtk_combo_box_text_new_with_entry ();
   gtk_combo_box_text_append_text ( GTK_COMBO_BOX_TEXT (combo_bitspersample),  "16");
   gtk_combo_box_text_append_text ( GTK_COMBO_BOX_TEXT (combo_bitspersample),  "8");
+  gtk_entry_set_text (GTK_ENTRY (gtk_bin_get_child (GTK_BIN (combo_bitspersample))),"16");
 
   label_channel = gtk_label_new ( gettext("Number of channels: "));
   combo_channel = gtk_combo_box_text_new_with_entry ();
@@ -391,6 +392,7 @@ int main( int  argc, char *argv[], char *envp[]) {
   combo_device = gtk_combo_box_text_new_with_entry ();
   gtk_combo_box_text_append_text ( GTK_COMBO_BOX_TEXT (combo_device), "jack");
   gtk_combo_box_text_append_text ( GTK_COMBO_BOX_TEXT (combo_device), "jack_auto");
+  gtk_combo_box_text_append_text ( GTK_COMBO_BOX_TEXT (combo_device), "default");
   gtk_combo_box_text_append_text ( GTK_COMBO_BOX_TEXT (combo_device), "/dev/dsp");
   gtk_combo_box_text_append_text ( GTK_COMBO_BOX_TEXT (combo_device), "/dev/dsp0");
   gtk_combo_box_text_append_text ( GTK_COMBO_BOX_TEXT (combo_device), "/dev/dsp1");
@@ -423,6 +425,7 @@ int main( int  argc, char *argv[], char *envp[]) {
   combo_public = gtk_combo_box_text_new_with_entry ();
   gtk_combo_box_text_append_text ( GTK_COMBO_BOX_TEXT (combo_public), "yes");
   gtk_combo_box_text_append_text ( GTK_COMBO_BOX_TEXT (combo_public), "no");
+  gtk_entry_set_text ( GTK_ENTRY(gtk_bin_get_child (GTK_BIN (combo_public))),"no");
 
   /* text view stuff */
   tag = gtk_text_tag_new ("");

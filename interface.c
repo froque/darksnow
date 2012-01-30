@@ -376,9 +376,8 @@ void darkice_not_found() {
   label_darkdep = gtk_label_new ( bar );
   button_darkdep = gtk_button_new_with_label ( gettext("Close"));
   gtk_window_set_title(GTK_WINDOW (dialog_darkdep), gettext("Error"));
-  gtk_widget_set_size_request (GTK_WIDGET (dialog_darkdep), 350, 200); 
   gtk_box_pack_start (GTK_BOX (gtk_dialog_get_action_area( GTK_DIALOG (dialog_darkdep))), button_darkdep, TRUE, TRUE, 0);
-  gtk_box_pack_start (GTK_BOX (GTK_DIALOG (dialog_darkdep)->vbox), label_darkdep, TRUE, TRUE, 0);
+  gtk_box_pack_start (GTK_BOX (gtk_dialog_get_content_area( GTK_DIALOG (dialog_darkdep))), label_darkdep, TRUE, TRUE, 0);
   
   g_signal_connect (G_OBJECT (dialog_darkdep), "delete_event",G_CALLBACK (delete_event), NULL);
   g_signal_connect (G_OBJECT (button_darkdep), "clicked",G_CALLBACK (delete_event), NULL);
